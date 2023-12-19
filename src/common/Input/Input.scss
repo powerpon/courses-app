@@ -1,0 +1,9 @@
+@import '../../variables';
+
+.input-bar{
+    border: {
+        style: solid;
+        color: $grayBasicColor;
+        radius: 4px;
+    }
+}

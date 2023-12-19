@@ -1,0 +1,13 @@
+@import '../../_variables.scss';
+
+.btn{
+    padding: 0.8rem 2.25rem;
+    color: $whiteColor;
+    background-color: $bluePrimary;
+    border:{
+        style: none;
+        radius: 3px;
+    }
+    cursor: pointer;
+    width: fit-content;
+}
