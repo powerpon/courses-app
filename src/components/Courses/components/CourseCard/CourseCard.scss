@@ -1,0 +1,59 @@
+@import '../../../../variables';
+
+.card{
+    border: {
+        left: .5rem solid $blackPrimaryColor;
+        radius: 3px;
+    }
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background-color: $whiteColor;
+    box-shadow: 2px 0px 8px $grayBasicColor;
+    padding: 1.5rem 1rem;
+
+    .card-title{
+        font:{
+            size: 1.25rem;
+            weight: 700;
+        }
+        padding-bottom: 1rem;
+        margin-left: 1rem;
+    }
+
+    .card-main-section{
+        display: flex;
+        justify-content: space-between;
+
+        .card-description{
+            font-size: 1rem;
+            color: $blackPrimaryColor;
+            margin-left: 1rem;
+            padding-right: 3rem;
+            width: calc(75% - 3rem);
+        }
+
+        .card-meta-data-btn{
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 75% + 3rem);
+
+            .card-meta-data{
+                color: $blackPrimaryColor;
+                font-size: 1rem;
+                padding-bottom: 1.5rem;
+
+                .meta-data-title{
+                    font-weight: 700;
+                    display: inline-block;
+                }
+
+                .meta-data-info{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+        }
+    }
+}
