@@ -1,0 +1,9 @@
+@import '../../variables';
+
+.textarea-bar{
+    border: {
+        style: solid;
+        color: $grayBasicColor;
+        radius: 4px;
+    }
+}

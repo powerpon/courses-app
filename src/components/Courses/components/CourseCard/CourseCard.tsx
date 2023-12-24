@@ -3,6 +3,8 @@ import { SHOW_COURSE_BUTTON_TEXT } from '../../../../constants';
 import './CourseCard.scss';
 import { formatCreationDate, getCourseDuration } from '../../../../helpers';
 import { Button } from '../../../../common';
+import { Link } from 'react-router-dom';
+import AuthorsMetaData from 'src/common/AuthorsMetaData/AuthorsMetaData';
 
 interface Course {
 	id: string;
@@ -20,16 +22,11 @@ interface Author {
 
 interface Props {
 	course: Course;
-	authors: Author[];
+	authorIds: string[];
 	className?: string;
-	setCourseInfoId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function CourseCard(props: Props) {
-	const handleShowCourseInfo = () => {
-		props.setCourseInfoId(props.course.id);
-	};
-
 	return (
 		<article className={'card ' + props.className}>
 			<p className='card-title'>{props.course.title}</p>
@@ -40,13 +37,7 @@ export default function CourseCard(props: Props) {
 				<div className='card-meta-data-btn'>
 					<ul className='card-meta-data'>
 						<li className='meta-data-info'>
-							<pre className='meta-data-title'>Authors: </pre>
-							{props.authors
-								.filter((author: Author) =>
-									props.course.authors.includes(author.id)
-								)
-								.map((author: Author) => author.name)
-								.join(', ')}
+							<AuthorsMetaData authorIds={props.course.authors} />
 						</li>
 						<li className='meta-data-info'>
 							<pre className='meta-data-title'>Duration: </pre>
@@ -57,10 +48,9 @@ export default function CourseCard(props: Props) {
 							{formatCreationDate(props.course.creationDate)}
 						</li>
 					</ul>
-					<Button
-						buttonText={SHOW_COURSE_BUTTON_TEXT}
-						onClick={handleShowCourseInfo}
-					/>
+					<Link to={`/courses/${props.course.id}`}>
+						<Button buttonText={SHOW_COURSE_BUTTON_TEXT} />
+					</Link>
 				</div>
 			</div>
 		</article>

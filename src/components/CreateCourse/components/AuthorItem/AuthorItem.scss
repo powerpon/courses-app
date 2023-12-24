@@ -1,0 +1,14 @@
+@import '../../../../variables';
+
+.author-item{
+    font-size: 1rem;
+    color: $blackPrimaryColor;
+    display: flex;
+    align-items: center;
+
+    .author-handle-icon{
+        padding: .2rem;
+        cursor: pointer;
+        margin-left: 1rem;
+    }
+}

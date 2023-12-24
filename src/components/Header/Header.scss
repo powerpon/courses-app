@@ -15,4 +15,18 @@ header{
     .header-logo{
         margin-left: 1.5rem;
     }
+
+    .user-name-logout-btn{
+        display: flex;
+        align-items: center;
+
+        .user-name{
+            padding-right: 1rem;
+            font: {
+                size: .875rem;
+                weight: 600;
+            };
+            color: $blackPrimaryColor;
+        }
+    }
 }

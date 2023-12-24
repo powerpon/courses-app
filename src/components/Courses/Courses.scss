@@ -9,11 +9,18 @@
     justify-content: center;
     align-items: center;
 
-    .loaded-search-bar, .loaded-course-card{
+    .search-bar-create-course-btn{
+        width: 100%;
+        display: flex;
+        margin-bottom: 2rem;
+    }
+    
+    .loaded-course-card{
         margin-bottom: 2rem;
     }
 
-    .loaded-search-bar{
-        align-self: start;
+
+    @media only screen and (max-width: 1000px) {
+        width: 100%;
     }
 }

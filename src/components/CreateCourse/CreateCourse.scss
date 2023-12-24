@@ -1,0 +1,124 @@
+@import '../../variables';
+
+.course-create{
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+
+    .course-create-title{
+        font-size: 2rem;
+        color: $blackPrimaryColor;
+        padding-bottom: 2rem;
+        align-self: flex-start;
+    }
+
+    .course-create-form-wrapper{
+        background-color: $whiteColor;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: {
+            style: solid;
+            color: $blackPrimaryColor;
+            radius: 4px;
+            width: 1px;
+        }
+
+        .create-course-main-sections{
+            width: 85%;
+
+            .create-course-section-title{
+                font: {
+                    size: 1.5rem;
+                    weight: 700;
+                }
+                padding-top: 2rem;
+            }
+
+            .form-label{
+                font:{
+                    size: .875rem;
+                    weight: 700;
+                }
+                color: $blackPrimaryColor;
+                padding-top: 2rem;
+                display: block;
+            }
+
+            .course-create-form-input{
+                height: 3.1rem;
+                width: 100%;
+            }
+
+            .course-create-form-textarea{
+                width: 100%;
+                height: 9.5rem;
+            }
+
+            .missing-input{
+                border-color: $redColor;
+            }
+
+            .input-required-text{
+                color: $redColor;
+                font-size: 1rem;
+            }
+
+            .course-create-form-input-duration{
+                height: 3.1rem;
+                width: 50%;
+            }
+
+            .duration-label{
+                font-size: 1rem;
+                color: $blackPrimaryColor;
+                padding-left: 1rem;
+            }
+
+            .author-create-form-btn{
+                margin-left: 1rem;
+            }
+
+            .create-course-authors{
+                display: flex;
+                justify-content: space-between;
+
+                .create-author-wrapper{
+                    width: 70%;
+
+                    .course-create-form-input-author-name{
+                        height: 3.1rem;
+                        width: 71%;
+                    }
+                }
+            }
+
+            .all-authors-list{
+                padding-top: 1rem;
+
+                .all-authors-list-item{
+                    padding: .2rem 0;
+                }
+            }
+
+            .create-course-all-authors{
+                padding-bottom: 2.5rem;
+            }
+        }
+    }
+    
+    .create-course-cancel-btn-wrapper{
+        margin: 2rem 0;
+        align-self: flex-end;
+
+        .create-course-cancel-btn{
+            margin-right: 1rem;
+        }
+    }
+}
