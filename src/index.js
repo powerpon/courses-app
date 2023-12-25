@@ -2,7 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+	createBrowserRouter,
+	RouterProvider,
+	Navigate,
+} from 'react-router-dom';
 import {
 	CourseInfo,
 	Courses,
@@ -20,13 +24,16 @@ const router = createBrowserRouter([
 		element: <App />,
 		children: [
 			{
-				index: true,
+				path: '/courses',
 				element: <Courses />,
-				errorElement: <EmptyCourseList />,
 			},
 			{
 				path: '/courses/:courseId',
 				element: <CourseInfo />,
+			},
+			{
+				path: '/courses/add',
+				element: <CreateCourse />,
 			},
 			{
 				path: '/login',
@@ -37,8 +44,8 @@ const router = createBrowserRouter([
 				element: <Registration />,
 			},
 			{
-				path: '/courses/add',
-				element: <CreateCourse />,
+				path: '*',
+				element: <Navigate to='/courses' />,
 			},
 		],
 	},

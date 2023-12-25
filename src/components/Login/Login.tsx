@@ -47,7 +47,7 @@ export default function Login() {
 					'accessToken',
 					response.data.result.slice('Bearer '.length)
 				);
-				navigation('/');
+				navigation('/courses');
 			}
 		} catch (error) {
 			console.log(error);

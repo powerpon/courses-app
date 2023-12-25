@@ -48,7 +48,7 @@ export default function CourseInfo() {
 					</li>
 				</ul>
 			</article>
-			<Link className='course-info-back-btn' to={'/'}>
+			<Link className='course-info-back-btn' to={'/courses'}>
 				<Button buttonText={BACK_BUTTON_TEXT} />
 			</Link>
 		</main>

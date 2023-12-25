@@ -97,7 +97,7 @@ export default function CreateCourse() {
 						},
 					}
 				);
-				navigation('/');
+				navigation('/courses');
 			}
 		} catch (error) {
 			console.log(error);
@@ -310,7 +310,7 @@ export default function CreateCourse() {
 				</ul>
 			</div>
 			<div className='create-course-cancel-btn-wrapper'>
-				<Link className='create-course-cancel-btn' to={'/'}>
+				<Link className='create-course-cancel-btn' to={'/courses'}>
 					<Button buttonText={CANCEL_BUTTON_TEXT} />
 				</Link>
 				<Button
