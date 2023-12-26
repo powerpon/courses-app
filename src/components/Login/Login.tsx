@@ -1,13 +1,16 @@
-import axios from 'axios';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Input } from 'src/common';
-import { LOGIN_BUTTON_TEXT, SERVER_POST_LOGIN_URL } from 'src/constants';
+import { LOGIN_BUTTON_TEXT } from 'src/constants';
 import './Login.scss';
 import { sanitizeFormInput } from 'src/helpers';
+import { useDispatch } from 'react-redux';
+import { login } from 'src/store/user/slice';
+import endpoints from '../../services';
 
 export default function Login() {
 	const navigation = useNavigate();
+	const dispatch = useDispatch();
 	const [formInputEmail, setFormInputEmail]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
@@ -25,32 +28,41 @@ export default function Login() {
 		React.Dispatch<React.SetStateAction<boolean>>,
 	] = React.useState(false);
 
-	const handleFormSubmit = async (event: React.FormEvent) => {
-		try {
-			event.preventDefault();
-			sanitizeFormInput(
-				formInputEmail,
-				setFormInputEmail,
-				setIsMissingInputEmail
-			);
-			sanitizeFormInput(
-				formInputPassword,
-				setFormInputPassword,
-				setIsMissingInputPassword
-			);
-			if (!isMissingInputEmail && !isMissingInputPassword) {
-				const response = await axios.post(SERVER_POST_LOGIN_URL, {
-					email: formInputEmail,
-					password: formInputPassword,
-				});
-				localStorage.setItem(
-					'accessToken',
-					response.data.result.slice('Bearer '.length)
-				);
-				navigation('/courses');
-			}
-		} catch (error) {
-			console.log(error);
+	const handleFormSubmit = (event: React.FormEvent) => {
+		event.preventDefault();
+		sanitizeFormInput(
+			formInputEmail,
+			setFormInputEmail,
+			setIsMissingInputEmail
+		);
+		sanitizeFormInput(
+			formInputPassword,
+			setFormInputPassword,
+			setIsMissingInputPassword
+		);
+		if (!isMissingInputEmail && !isMissingInputPassword) {
+			endpoints
+				.loginUser(formInputEmail, formInputPassword)
+				.then((response) => {
+					localStorage.setItem(
+						'accessToken',
+						response.data.result.slice('Bearer '.length)
+					);
+					endpoints
+						.getUser(localStorage.getItem('accessToken'))
+						.then((response) => {
+							dispatch(
+								login({
+									name: response.data.result.name,
+									email: response.data.result.email,
+									token: localStorage.getItem('accessToken'),
+								})
+							);
+						})
+						.catch((error) => console.log(error));
+					navigation('/courses');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 

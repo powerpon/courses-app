@@ -6,6 +6,7 @@ interface Props {
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 	className?: string;
 	form?: string;
+	children?: JSX.Element;
 }
 
 export default function Button(props: Props) {
@@ -15,7 +16,7 @@ export default function Button(props: Props) {
 			className={'btn ' + props.className}
 			onClick={props.onClick}
 		>
-			{props.buttonText}
+			{props.buttonText || props.children}
 		</button>
 	);
 }

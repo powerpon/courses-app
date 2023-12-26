@@ -1,13 +1,10 @@
 import * as React from 'react';
 import './Registration.scss';
 import { Button, Input } from '../../common';
-import {
-	REGISTER_BUTTON_TEXT,
-	SERVER_POST_REGISTER_URL,
-} from '../../constants';
+import { REGISTER_BUTTON_TEXT } from '../../constants';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { sanitizeFormInput } from 'src/helpers';
+import endpoints from '../../services';
 
 export default function Registration() {
 	const navigation = useNavigate();
@@ -36,34 +33,30 @@ export default function Registration() {
 		React.Dispatch<React.SetStateAction<boolean>>,
 	] = React.useState(false);
 
-	const handleFormSubmit = async (event: React.FormEvent) => {
+	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		try {
-			sanitizeFormInput(formInputName, setFormInputName, setIsMissingInputName);
-			sanitizeFormInput(
-				formInputEmail,
-				setFormInputEmail,
-				setIsMissingInputEmail
-			);
-			sanitizeFormInput(
-				formInputPassword,
-				setFormInputPassword,
-				setIsMissingInputPassword
-			);
-			if (
-				!isMissingInputName &&
-				!isMissingInputEmail &&
-				!isMissingInputPassword
-			) {
-				await axios.post(SERVER_POST_REGISTER_URL, {
-					name: formInputName,
-					email: formInputEmail,
-					password: formInputPassword,
-				});
-				navigation('/login');
-			}
-		} catch (error) {
-			console.log(error);
+		sanitizeFormInput(formInputName, setFormInputName, setIsMissingInputName);
+		sanitizeFormInput(
+			formInputEmail,
+			setFormInputEmail,
+			setIsMissingInputEmail
+		);
+		sanitizeFormInput(
+			formInputPassword,
+			setFormInputPassword,
+			setIsMissingInputPassword
+		);
+		if (
+			!isMissingInputName &&
+			!isMissingInputEmail &&
+			!isMissingInputPassword
+		) {
+			endpoints
+				.registerUser(formInputName, formInputEmail, formInputPassword)
+				.then(() => {
+					navigation('/login');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 
