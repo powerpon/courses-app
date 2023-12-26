@@ -5,7 +5,7 @@ import './Header.scss';
 import { LOGIN_BUTTON_TEXT, LOGOUT_BUTTON_TEXT } from '../../constants';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from 'src/store/user/slice';
+import { login, logout } from 'src/store/user/slice';
 import { getUserSelector } from 'src/store/user/selectors';
 import endpoints from '../../services';
 
@@ -25,6 +25,15 @@ export default function Header() {
 		endpoints.logoutUser(user.token).catch((error) => console.log(error));
 		dispatch(logout());
 	};
+
+	React.useEffect(() => {
+		if (localStorage.getItem('accessToken') !== null) {
+			endpoints
+				.getUser(localStorage.getItem('accessToken'))
+				.then((response) => dispatch(login(response.data.result)))
+				.catch((error) => console.log(error));
+		}
+	}, []);
 
 	return (
 		<header>
