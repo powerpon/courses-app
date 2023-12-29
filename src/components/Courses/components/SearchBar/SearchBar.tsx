@@ -1,21 +1,18 @@
-import * as React from 'react';
+import { Input, Button } from 'src/common';
+import { SEARCH_BUTTON_TEXT } from 'src/constants';
 import './SearchBar.scss';
-import { Input, Button } from '../../../../common';
-import { SEARCH_BUTTON_TEXT } from '../../../../constants';
+import React, { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 
 interface Props {
 	className?: string;
 	query: string;
-	setQuery: React.Dispatch<React.SetStateAction<string>>;
+	setQuery: Dispatch<SetStateAction<string>>;
 }
 
 export default function SearchBar(props: Props) {
-	const [searchQuery, setSearchQuery]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	const [searchQuery, setSearchQuery] = useState('');
 
-	const handleQuerySubmit = (event: React.FormEvent) => {
+	const handleQuerySubmit = (event: FormEvent) => {
 		event.preventDefault();
 		const clearQuery = searchQuery.trim().toLowerCase();
 		props.setQuery(clearQuery);

@@ -1,18 +1,24 @@
-import * as React from 'react';
 import './AuthorsMetaData.scss';
 import { Author } from 'src/components/Courses/components/CourseCard/CourseCard';
-import useFetch from 'src/custom-hooks/useFetch';
-import { SERVER_FETCH_AUTHORS_BY_IDS_URL } from 'src/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAuthorsSelector } from 'src/store/authors/selectors';
+import { AppDispatch } from 'src/store';
+import { fetchAllAuthors } from 'src/store/authors/thunk';
+import React, { useEffect } from 'react';
 
 interface Props {
 	authorIds: string[];
 }
 
 export default function AuthorsMetaData(props: Props) {
-	const authors: Author[] = useFetch(
-		SERVER_FETCH_AUTHORS_BY_IDS_URL,
-		...props.authorIds
+	const authors: Author[] = useSelector(getAuthorsSelector).authors.filter(
+		(author) => props.authorIds.includes(author.id)
 	);
+	const dispatch = useDispatch<AppDispatch>();
+
+	useEffect(() => {
+		dispatch(fetchAllAuthors());
+	}, []);
 
 	return (
 		<>

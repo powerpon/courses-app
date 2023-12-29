@@ -1,56 +1,44 @@
-import axios from 'axios';
-import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Input } from 'src/common';
-import { LOGIN_BUTTON_TEXT, SERVER_POST_LOGIN_URL } from 'src/constants';
+import { LOGIN_BUTTON_TEXT } from 'src/constants';
 import './Login.scss';
 import { sanitizeFormInput } from 'src/helpers';
+import endpoints from 'src/services';
+import React, { FormEvent, useState } from 'react';
 
 export default function Login() {
 	const navigation = useNavigate();
-	const [formInputEmail, setFormInputEmail]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputPassword, setFormInputPassword]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [isMissingInputEmail, setIsMissingInputEmail]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputPassword, setIsMissingInputPassword]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
+	const [formInputEmail, setFormInputEmail] = useState('');
+	const [formInputPassword, setFormInputPassword] = useState('');
+	const [isMissingInputEmail, setIsMissingInputEmail] = useState(false);
+	const [isMissingInputPassword, setIsMissingInputPassword] = useState(false);
 
-	const handleFormSubmit = async (event: React.FormEvent) => {
-		try {
-			event.preventDefault();
-			sanitizeFormInput(
-				formInputEmail,
-				setFormInputEmail,
-				setIsMissingInputEmail
-			);
-			sanitizeFormInput(
-				formInputPassword,
-				setFormInputPassword,
-				setIsMissingInputPassword
-			);
-			if (!isMissingInputEmail && !isMissingInputPassword) {
-				const response = await axios.post(SERVER_POST_LOGIN_URL, {
-					email: formInputEmail,
-					password: formInputPassword,
-				});
-				localStorage.setItem(
-					'accessToken',
-					response.data.result.slice('Bearer '.length)
-				);
-				navigation('/courses');
-			}
-		} catch (error) {
-			console.log(error);
+	const handleFormSubmit = (event: FormEvent) => {
+		event.preventDefault();
+		const isMissingEmailAfterSanitization = sanitizeFormInput(
+			formInputEmail,
+			setFormInputEmail,
+			setIsMissingInputEmail
+		);
+		const isMissingPasswordAfterSanitization = sanitizeFormInput(
+			formInputPassword,
+			setFormInputPassword,
+			setIsMissingInputPassword
+		);
+		if (
+			!isMissingEmailAfterSanitization &&
+			!isMissingPasswordAfterSanitization
+		) {
+			endpoints
+				.loginUser(formInputEmail, formInputPassword)
+				.then((response) => {
+					localStorage.setItem(
+						'accessToken',
+						response.data.result.slice('Bearer '.length)
+					);
+					navigation('/courses');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 

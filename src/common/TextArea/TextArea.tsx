@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { INPUT_BAR_PLACEHOLDER_TEXT } from '../../constants';
+import { INPUT_BAR_PLACEHOLDER_TEXT } from 'src/constants';
 import './TextArea.scss';
+import React, { Dispatch, SetStateAction } from 'react';
 
 interface Props {
 	className?: string;
 	value: string;
-	setValue: React.Dispatch<React.SetStateAction<string>>;
+	setValue: Dispatch<SetStateAction<string>>;
 	id?: string;
 	form?: string;
 }

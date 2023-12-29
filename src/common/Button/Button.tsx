@@ -1,11 +1,12 @@
-import * as React from 'react';
 import './Button.scss';
+import React, { MouseEventHandler } from 'react';
 
 interface Props {
 	buttonText?: string;
-	onClick?: React.MouseEventHandler<HTMLButtonElement>;
+	onClick?: MouseEventHandler<HTMLButtonElement>;
 	className?: string;
 	form?: string;
+	children?: JSX.Element;
 }
 
 export default function Button(props: Props) {
@@ -15,7 +16,7 @@ export default function Button(props: Props) {
 			className={'btn ' + props.className}
 			onClick={props.onClick}
 		>
-			{props.buttonText}
+			{props.buttonText || props.children}
 		</button>
 	);
 }

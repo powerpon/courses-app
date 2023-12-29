@@ -1,15 +1,13 @@
-import * as React from 'react';
-import Logo from './components/Logo/Logo';
-import Button from '../../common/Button/Button';
 import './Header.scss';
-import {
-	LOGIN_BUTTON_TEXT,
-	LOGOUT_BUTTON_TEXT,
-	SERVER_FETCH_USER_URL,
-	SERVER_POST_LOGOUT_URL,
-} from '../../constants';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserSelector } from 'src/store/user/selectors';
+import { login, logout } from 'src/store/user/thunk';
+import { AppDispatch } from 'src/store';
+import React, { useEffect } from 'react';
+import { Button } from 'src/common';
+import { LOGIN_BUTTON_TEXT, LOGOUT_BUTTON_TEXT } from 'src/constants';
+import { Logo } from 'src/components';
 
 interface User {
 	email: string;
@@ -19,46 +17,31 @@ interface User {
 
 export default function Header() {
 	const locationPath: string = useLocation().pathname;
-	const [user, setUser]: [User, React.Dispatch<React.SetStateAction<User>>] =
-		React.useState(undefined);
-	const [token, setToken]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	const user = useSelector(getUserSelector);
+	const dispatch = useDispatch<AppDispatch>();
 
 	const handleLogout = async () => {
 		localStorage.removeItem('accessToken');
-		await axios.delete(SERVER_POST_LOGOUT_URL, {
-			headers: { Authorization: 'Bearer ' + token },
-		});
-		setUser(undefined);
-		setToken('');
+		dispatch(logout(user.token));
 	};
 
-	React.useEffect(() => {
-		const getUser = async () => {
-			const userToken = localStorage.getItem('accessToken');
-			if (userToken !== null) {
-				setToken(userToken);
-				const response = await axios.get(SERVER_FETCH_USER_URL, {
-					headers: { Authorization: 'Bearer ' + userToken },
-				});
-				setUser(response.data.result);
-			}
-		};
-		getUser();
-	}, [locationPath]);
+	useEffect(() => {
+		const userToken = localStorage.getItem('accessToken');
+		if (userToken !== null) {
+			dispatch(login(userToken));
+		}
+	}, []);
 
 	return (
 		<header>
 			<Logo className='header-logo' />
 			{locationPath !== '/login' && locationPath !== '/registration' && (
 				<div className='user-name-logout-btn'>
-					<p className='user-name'>{user && user.name}</p>
+					<p className='user-name'>{user.isAuth && user.name}</p>
 					<Link to={'/login'}>
 						<Button
-							onClick={user && handleLogout}
-							buttonText={!user ? LOGIN_BUTTON_TEXT : LOGOUT_BUTTON_TEXT}
+							onClick={user.isAuth ? handleLogout : undefined}
+							buttonText={!user.isAuth ? LOGIN_BUTTON_TEXT : LOGOUT_BUTTON_TEXT}
 							className='header-login-btn'
 						/>
 					</Link>

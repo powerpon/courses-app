@@ -1,69 +1,48 @@
-import * as React from 'react';
 import './Registration.scss';
-import { Button, Input } from '../../common';
-import {
-	REGISTER_BUTTON_TEXT,
-	SERVER_POST_REGISTER_URL,
-} from '../../constants';
+import { Button, Input } from 'src/common';
+import { REGISTER_BUTTON_TEXT } from 'src/constants';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { sanitizeFormInput } from 'src/helpers';
+import endpoints from 'src/services';
+import React, { FormEvent, useState } from 'react';
 
 export default function Registration() {
 	const navigation = useNavigate();
-	const [formInputName, setFormInputName]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputEmail, setFormInputEmail]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputPassword, setFormInputPassword]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [isMissingInputName, setIsMissingInputName]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputEmail, setIsMissingInputEmail]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputPassword, setIsMissingInputPassword]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
+	const [formInputName, setFormInputName] = useState('');
+	const [formInputEmail, setFormInputEmail] = useState('');
+	const [formInputPassword, setFormInputPassword] = useState('');
+	const [isMissingInputName, setIsMissingInputName] = useState(false);
+	const [isMissingInputEmail, setIsMissingInputEmail] = useState(false);
+	const [isMissingInputPassword, setIsMissingInputPassword] = useState(false);
 
-	const handleFormSubmit = async (event: React.FormEvent) => {
+	const handleFormSubmit = (event: FormEvent) => {
 		event.preventDefault();
-		try {
-			sanitizeFormInput(formInputName, setFormInputName, setIsMissingInputName);
-			sanitizeFormInput(
-				formInputEmail,
-				setFormInputEmail,
-				setIsMissingInputEmail
-			);
-			sanitizeFormInput(
-				formInputPassword,
-				setFormInputPassword,
-				setIsMissingInputPassword
-			);
-			if (
-				!isMissingInputName &&
-				!isMissingInputEmail &&
-				!isMissingInputPassword
-			) {
-				await axios.post(SERVER_POST_REGISTER_URL, {
-					name: formInputName,
-					email: formInputEmail,
-					password: formInputPassword,
-				});
-				navigation('/login');
-			}
-		} catch (error) {
-			console.log(error);
+		const isMissingNameAfterSanitization = sanitizeFormInput(
+			formInputName,
+			setFormInputName,
+			setIsMissingInputName
+		);
+		const isMissingEmailAfterSanitization = sanitizeFormInput(
+			formInputEmail,
+			setFormInputEmail,
+			setIsMissingInputEmail
+		);
+		const isMissingPasswordAfterSanitization = sanitizeFormInput(
+			formInputPassword,
+			setFormInputPassword,
+			setIsMissingInputPassword
+		);
+		if (
+			!isMissingNameAfterSanitization &&
+			!isMissingEmailAfterSanitization &&
+			!isMissingPasswordAfterSanitization
+		) {
+			endpoints
+				.registerUser(formInputName, formInputEmail, formInputPassword)
+				.then(() => {
+					navigation('/login');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 

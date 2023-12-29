@@ -1,16 +1,17 @@
-import React from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 export const sanitizeFormInput = (
 	input: string,
-	setInput: React.Dispatch<React.SetStateAction<string>>,
-	setIsInputInvalid: React.Dispatch<React.SetStateAction<boolean>>,
+	setInput: Dispatch<SetStateAction<string>>,
+	setIsInputInvalid: Dispatch<SetStateAction<boolean>>,
 	mininumCharacters = 1
 ) => {
 	const clearInput = input.trim();
 	setInput(clearInput);
 	if (clearInput.length < mininumCharacters) {
 		setIsInputInvalid(true);
-		return;
+		return true;
 	}
 	setIsInputInvalid(false);
+	return false;
 };

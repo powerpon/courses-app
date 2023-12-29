@@ -1,21 +1,18 @@
-import * as React from 'react';
+import React from 'react';
 import './CourseInfo.scss';
-import { Button } from '../../common';
-import {
-	BACK_BUTTON_TEXT,
-	SERVER_FETCH_COURSES_BY_IDS_URL,
-} from '../../constants';
-import { Course } from '../Courses/components/CourseCard/CourseCard';
-import { formatCreationDate, getCourseDuration } from '../../helpers';
 import { Link, useParams } from 'react-router-dom';
-import useFetch from 'src/custom-hooks/useFetch';
 import AuthorsMetaData from 'src/common/AuthorsMetaData/AuthorsMetaData';
+import { useSelector } from 'react-redux';
+import { getCoursesSelector } from 'src/store/courses/selectors';
+import { Button } from 'src/common';
+import { BACK_BUTTON_TEXT } from 'src/constants';
+import { getCourseDuration, formatCreationDate } from 'src/helpers';
+import { Course } from '../Courses/components/CourseCard/CourseCard';
 
 export default function CourseInfo() {
 	const { courseId } = useParams();
-	const [course]: Course[] = useFetch(
-		SERVER_FETCH_COURSES_BY_IDS_URL,
-		courseId
+	const course: Course = useSelector(getCoursesSelector).courses.find(
+		(courseItem) => courseItem.id === courseId
 	);
 
 	if (course === undefined) {
