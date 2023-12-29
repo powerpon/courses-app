@@ -1,10 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { login, logout } from './thunk';
 
 interface UserState {
 	isAuth: boolean;
 	name: string;
 	email: string;
 	token: string;
+	role: string;
 }
 
 const initialUserState: UserState = {
@@ -12,30 +14,38 @@ const initialUserState: UserState = {
 	name: '',
 	email: '',
 	token: '',
+	role: '',
 };
 
 const userSlice = createSlice({
 	name: 'user',
 	initialState: initialUserState,
-	reducers: {
-		login: (
-			state: UserState,
-			action: PayloadAction<{ name: string; email: string; token: string }>
-		) => {
-			state.email = action.payload.email;
-			state.name = action.payload.name;
-			state.token = action.payload.token;
-			action.payload.token === ''
-				? (state.isAuth = false)
-				: (state.isAuth = true);
-		},
-		logout: (state: UserState) => {
-			state = initialUserState;
-		},
+	reducers: {},
+	extraReducers: (builder) => {
+		builder
+			.addCase(
+				login.fulfilled,
+				(
+					state: UserState,
+					action: PayloadAction<{
+						name: string;
+						email: string;
+						role: string;
+					}>
+				) => {
+					state.email = action.payload.email;
+					state.name = action.payload.name;
+					state.token = localStorage.getItem('accessToken'); // action.payload.token
+					state.role = action.payload.role;
+					state.token !== null ? (state.isAuth = true) : (state.isAuth = false);
+				}
+			)
+			.addCase(logout.fulfilled, (state: UserState) => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				state = initialUserState;
+			});
 	},
 });
-
-export const { login, logout } = userSlice.actions;
 
 export default userSlice.reducer;
 

@@ -10,8 +10,8 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { UserState } from 'src/store/user/slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserSelector } from 'src/store/user/selectors';
-import endpoints from '../../../../services';
-import { deleteCourse } from 'src/store/courses/slice';
+import { AppDispatch } from 'src/store';
+import { deleteCourse } from 'src/store/courses/thunk';
 
 interface Course {
 	id: string;
@@ -35,16 +35,7 @@ interface Props {
 
 export default function CourseCard(props: Props) {
 	const user: UserState = useSelector(getUserSelector);
-	const dispatch = useDispatch();
-
-	const handleCourseDelettion = (courseId: string) => {
-		endpoints
-			.deleteCourseById(courseId, user.token)
-			.then(() => {
-				dispatch(deleteCourse(courseId));
-			})
-			.catch((error) => console.log(error));
-	};
+	const dispatch = useDispatch<AppDispatch>();
 
 	return (
 		<article className={'card ' + props.className}>
@@ -71,17 +62,28 @@ export default function CourseCard(props: Props) {
 						<Link to={`/courses/${props.course.id}`}>
 							<Button buttonText={SHOW_COURSE_BUTTON_TEXT} />
 						</Link>
-						<Button
-							onClick={() => {
-								handleCourseDelettion(props.course.id);
-							}}
-							className='delete-course-btn'
-						>
-							<FontAwesomeIcon icon={faTrash} />
-						</Button>
-						<Button className='delete-course-btn'>
-							<FontAwesomeIcon icon={faPen} />
-						</Button>
+						{user.role === 'admin' && (
+							<>
+								<Button
+									onClick={() => {
+										dispatch(
+											deleteCourse({
+												courseId: props.course.id,
+												token: user.token,
+											})
+										);
+									}}
+									className='delete-course-btn'
+								>
+									<FontAwesomeIcon icon={faTrash} />
+								</Button>
+								<Link to={'/courses/update/' + props.course.id}>
+									<Button className='edit-course-btn'>
+										<FontAwesomeIcon icon={faPen} />
+									</Button>
+								</Link>
+							</>
+						)}
 					</div>
 				</div>
 			</div>

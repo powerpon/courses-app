@@ -10,9 +10,10 @@ import {
 import {
 	CourseInfo,
 	Courses,
-	CreateCourse,
+	CourseForm,
 	Login,
 	Registration,
+	PrivateRoute,
 } from './components';
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -34,7 +35,19 @@ const router = createBrowserRouter([
 			},
 			{
 				path: '/courses/add',
-				element: <CreateCourse />,
+				element: (
+					<PrivateRoute>
+						<CourseForm />
+					</PrivateRoute>
+				),
+			},
+			{
+				path: '/courses/update/:courseId',
+				element: (
+					<PrivateRoute>
+						<CourseForm />
+					</PrivateRoute>
+				),
 			},
 			{
 				path: '/login',

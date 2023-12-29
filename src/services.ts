@@ -11,6 +11,7 @@ import {
 	SERVER_POST_LOGIN_URL,
 	SERVER_POST_LOGOUT_URL,
 	SERVER_POST_REGISTER_URL,
+	SERVER_UPDATE_COURSE_URL,
 } from './constants';
 
 export default {
@@ -90,5 +91,24 @@ export default {
 		await axios.delete(SERVER_DELETE_COURSE_URL + id, {
 			headers: { Authorization: 'Bearer ' + token },
 		});
+	},
+	updateCourseById: async (
+		id: string,
+		token: string,
+		title: string,
+		description: string,
+		duration: number,
+		authorIds: string[]
+	) => {
+		return await axios.put(
+			SERVER_UPDATE_COURSE_URL + id,
+			{
+				title: title,
+				description: description,
+				duration: duration,
+				authors: authorIds,
+			},
+			{ headers: { Authorization: 'Bearer ' + token } }
+		);
 	},
 };

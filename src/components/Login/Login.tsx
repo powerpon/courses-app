@@ -4,13 +4,10 @@ import { Button, Input } from 'src/common';
 import { LOGIN_BUTTON_TEXT } from 'src/constants';
 import './Login.scss';
 import { sanitizeFormInput } from 'src/helpers';
-import { useDispatch } from 'react-redux';
-import { login } from 'src/store/user/slice';
 import endpoints from '../../services';
 
 export default function Login() {
 	const navigation = useNavigate();
-	const dispatch = useDispatch();
 	const [formInputEmail, setFormInputEmail]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
@@ -30,17 +27,20 @@ export default function Login() {
 
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingEmailAfterSanitization = sanitizeFormInput(
 			formInputEmail,
 			setFormInputEmail,
 			setIsMissingInputEmail
 		);
-		sanitizeFormInput(
+		const isMissingPasswordAfterSanitization = sanitizeFormInput(
 			formInputPassword,
 			setFormInputPassword,
 			setIsMissingInputPassword
 		);
-		if (!isMissingInputEmail && !isMissingInputPassword) {
+		if (
+			!isMissingEmailAfterSanitization &&
+			!isMissingPasswordAfterSanitization
+		) {
 			endpoints
 				.loginUser(formInputEmail, formInputPassword)
 				.then((response) => {
@@ -48,18 +48,6 @@ export default function Login() {
 						'accessToken',
 						response.data.result.slice('Bearer '.length)
 					);
-					endpoints
-						.getUser(localStorage.getItem('accessToken'))
-						.then((response) => {
-							dispatch(
-								login({
-									name: response.data.result.name,
-									email: response.data.result.email,
-									token: localStorage.getItem('accessToken'),
-								})
-							);
-						})
-						.catch((error) => console.log(error));
 					navigation('/courses');
 				})
 				.catch((error) => console.log(error));

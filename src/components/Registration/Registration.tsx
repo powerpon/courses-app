@@ -35,21 +35,25 @@ export default function Registration() {
 
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(formInputName, setFormInputName, setIsMissingInputName);
-		sanitizeFormInput(
+		const isMissingNameAfterSanitization = sanitizeFormInput(
+			formInputName,
+			setFormInputName,
+			setIsMissingInputName
+		);
+		const isMissingEmailAfterSanitization = sanitizeFormInput(
 			formInputEmail,
 			setFormInputEmail,
 			setIsMissingInputEmail
 		);
-		sanitizeFormInput(
+		const isMissingPasswordAfterSanitization = sanitizeFormInput(
 			formInputPassword,
 			setFormInputPassword,
 			setIsMissingInputPassword
 		);
 		if (
-			!isMissingInputName &&
-			!isMissingInputEmail &&
-			!isMissingInputPassword
+			!isMissingNameAfterSanitization &&
+			!isMissingEmailAfterSanitization &&
+			!isMissingPasswordAfterSanitization
 		) {
 			endpoints
 				.registerUser(formInputName, formInputEmail, formInputPassword)

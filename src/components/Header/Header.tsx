@@ -5,9 +5,9 @@ import './Header.scss';
 import { LOGIN_BUTTON_TEXT, LOGOUT_BUTTON_TEXT } from '../../constants';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, logout } from 'src/store/user/slice';
 import { getUserSelector } from 'src/store/user/selectors';
-import endpoints from '../../services';
+import { login, logout } from 'src/store/user/thunk';
+import { AppDispatch } from 'src/store';
 
 interface User {
 	email: string;
@@ -18,20 +18,16 @@ interface User {
 export default function Header() {
 	const locationPath: string = useLocation().pathname;
 	const user = useSelector(getUserSelector);
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const handleLogout = async () => {
 		localStorage.removeItem('accessToken');
-		endpoints.logoutUser(user.token).catch((error) => console.log(error));
-		dispatch(logout());
+		dispatch(logout(user.token));
 	};
 
 	React.useEffect(() => {
 		if (localStorage.getItem('accessToken') !== null) {
-			endpoints
-				.getUser(localStorage.getItem('accessToken'))
-				.then((response) => dispatch(login(response.data.result)))
-				.catch((error) => console.log(error));
+			dispatch(login(localStorage.getItem('accessToken')));
 		}
 	}, []);
 

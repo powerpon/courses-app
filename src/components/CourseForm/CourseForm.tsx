@@ -1,36 +1,50 @@
 import * as React from 'react';
-import './CreateCourse.scss';
+import './CourseForm.scss';
 import { Button, Input, TextArea } from '../../common';
 import {
 	CANCEL_BUTTON_TEXT,
 	CREATE_AUTHOR_BUTTON_TEXT,
 	CREATE_COURSE_BUTTON_TEXT,
 } from '../../constants';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Author } from '../Courses/components/CourseCard/CourseCard';
 import AuthorItem from './components/AuthorItem/AuthorItem';
 import { getCourseDuration, sanitizeFormInput } from 'src/helpers';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-	AuthorsState,
-	fetchAllAuthors,
-	saveAuthor,
-} from 'src/store/authors/slice';
+import { AuthorsState } from 'src/store/authors/slice';
 import { getAuthorsSelector } from 'src/store/authors/selectors';
-import endpoints from '../../services';
 import { UserState } from 'src/store/user/slice';
 import { getUserSelector } from 'src/store/user/selectors';
-import { saveCourse } from 'src/store/courses/slice';
+import {
+	fetchAllCourses,
+	saveCourse,
+	updateCourse,
+} from 'src/store/courses/thunk';
+import { AppDispatch } from 'src/store';
+import { fetchAllAuthors, saveAuthor } from 'src/store/authors/thunk';
+import { getCoursesSelector } from 'src/store/courses/selectors';
+import { CoursesState } from 'src/store/courses/slice';
 
-export default function CreateCourse() {
+export default function CourseForm() {
 	const navigation = useNavigate();
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
+	const { courseId } = useParams();
 	const authorsState: AuthorsState = useSelector(getAuthorsSelector);
 	const user: UserState = useSelector(getUserSelector);
+	const coursesState: CoursesState = useSelector(getCoursesSelector);
+	const currentCourseToEdit = React.useRef(
+		coursesState.courses.find((course) => course.id === courseId)
+	);
 	const [courseAuthorList, setCourseAuthorList]: [
 		Author[],
 		React.Dispatch<React.SetStateAction<Author[]>>,
-	] = React.useState([]);
+	] = React.useState(
+		currentCourseToEdit.current
+			? authorsState.authors.filter((author) =>
+					currentCourseToEdit.current.authors.includes(author.id)
+				)
+			: []
+	);
 	const [formInputAuthorName, setFormInputAuthorName]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
@@ -38,15 +52,23 @@ export default function CreateCourse() {
 	const [formInputCourseTitle, setFormInputCourseTitle]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	] = React.useState(
+		currentCourseToEdit.current ? currentCourseToEdit.current.title : ''
+	);
 	const [formInputCourseDescription, setFormInputCourseDescription]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	] = React.useState(
+		currentCourseToEdit.current ? currentCourseToEdit.current.description : ''
+	);
 	const [formInputCourseDuration, setFormInputCourseDuration]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	] = React.useState(
+		currentCourseToEdit.current
+			? currentCourseToEdit.current.duration.toString()
+			: ''
+	);
 	const [isMissingAuthorName, setIsMissingAuthorName]: [
 		boolean,
 		React.Dispatch<React.SetStateAction<boolean>>,
@@ -64,70 +86,75 @@ export default function CreateCourse() {
 		React.Dispatch<React.SetStateAction<boolean>>,
 	] = React.useState(false);
 
-	const handleCreateCourseFormSubmit = (event: React.FormEvent) => {
+	const handleCourseFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingCourseTitleAfterSanitization = sanitizeFormInput(
 			formInputCourseTitle,
 			setFormInputCourseTitle,
 			setIsMissingInputCourseTitle,
 			3
 		);
-		sanitizeFormInput(
+		const isMissingCourseDescriptionAfterSanitization = sanitizeFormInput(
 			formInputCourseDescription,
 			setFormInputCourseDescription,
 			setIsMissingInputCourseDescription,
 			3
 		);
-		sanitizeFormInput(
+		const isMissingCourseDurationAfterSanitization = sanitizeFormInput(
 			formInputCourseDuration,
 			setFormInputCourseDuration,
 			setIsMissingInputCourseDuration
 		);
 		if (
-			!isMissingInputCourseTitle &&
-			!isMissingInputCourseDescription &&
-			!isMissingInputCourseDuration
+			!isMissingCourseTitleAfterSanitization &&
+			!isMissingCourseDescriptionAfterSanitization &&
+			!isMissingCourseDurationAfterSanitization
 		) {
-			endpoints
-				.saveCourse(
-					formInputCourseTitle,
-					formInputCourseDescription,
-					Number.parseInt(formInputCourseDuration),
-					courseAuthorList.map((author) => author.id),
-					user.token
-				)
-				.then((response) => {
-					dispatch(saveCourse(response.data.result));
-					navigation('/courses');
+			if (currentCourseToEdit.current) {
+				dispatch(
+					updateCourse({
+						courseId: currentCourseToEdit.current.id,
+						courseTitle: formInputCourseTitle,
+						courseDescription: formInputCourseDescription,
+						courseDuration: Number.parseInt(formInputCourseDuration),
+						courseAuthorIds: courseAuthorList.map((author) => author.id),
+						token: user.token,
+					})
+				).then(() => navigation('/courses'));
+				return;
+			}
+			dispatch(
+				saveCourse({
+					courseTitle: formInputCourseTitle,
+					courseDescription: formInputCourseDescription,
+					courseDuration: Number.parseInt(formInputCourseDuration),
+					courseAuthorIds: courseAuthorList.map((author) => author.id),
+					token: user.token,
 				})
-				.catch((error) => console.log(error));
+			).then(() => navigation('/courses'));
 		}
 	};
 
 	const handleCreateAuthorFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingAuthorNameAfterSanitization = sanitizeFormInput(
 			formInputAuthorName,
 			setFormInputAuthorName,
 			setIsMissingAuthorName,
 			3
 		);
-		if (!isMissingAuthorName) {
-			endpoints
-				.saveAuthor(formInputAuthorName, user.token)
-				.then((response) => {
-					dispatch(saveAuthor(response.data.result));
-					setFormInputAuthorName('');
-				})
-				.catch((error) => console.log(error));
+		if (!isMissingAuthorNameAfterSanitization) {
+			dispatch(
+				saveAuthor({ authorName: formInputAuthorName, token: user.token })
+			).then(() => {
+				setFormInputAuthorName('');
+			});
 		}
 	};
 
 	React.useEffect(() => {
-		endpoints
-			.getAllAuthors()
-			.then((response) => dispatch(fetchAllAuthors(response.data.result)))
-			.catch((error) => console.log(error));
+		dispatch(fetchAllAuthors());
+		dispatch(fetchAllCourses());
 	}, []);
 
 	return (
@@ -135,7 +162,7 @@ export default function CreateCourse() {
 			<h3 className='course-create-title'>Course Edit/Create Page</h3>
 			<div className='course-create-form-wrapper'>
 				<form
-					onSubmit={handleCreateCourseFormSubmit}
+					onSubmit={handleCourseFormSubmit}
 					id='course-create-form'
 					method='POST'
 				></form>
@@ -307,7 +334,7 @@ export default function CreateCourse() {
 				</Link>
 				<Button
 					form='course-create-form'
-					onClick={handleCreateCourseFormSubmit}
+					onClick={handleCourseFormSubmit}
 					buttonText={CREATE_COURSE_BUTTON_TEXT}
 				/>
 			</div>

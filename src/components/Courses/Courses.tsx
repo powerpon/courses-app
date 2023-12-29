@@ -6,15 +6,17 @@ import { Button } from 'src/common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserSelector } from 'src/store/user/selectors';
-import endpoints from '../../services';
-import { CoursesState, fetchAllCourses } from 'src/store/courses/slice';
+import { CoursesState } from 'src/store/courses/slice';
 import { UserState } from 'src/store/user/slice';
 import { getCoursesSelector } from 'src/store/courses/selectors';
+import { AppDispatch } from 'src/store';
+import { login } from 'src/store/user/thunk';
+import { fetchAllCourses } from 'src/store/courses/thunk';
 
 export default function Courses() {
 	const coursesState: CoursesState = useSelector(getCoursesSelector);
 	const user: UserState = useSelector(getUserSelector);
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const [query, setQuery]: [
 		string,
@@ -22,10 +24,10 @@ export default function Courses() {
 	] = React.useState('');
 
 	React.useEffect(() => {
-		endpoints
-			.getAllCourses()
-			.then((response) => dispatch(fetchAllCourses(response.data.result)))
-			.catch((error) => console.log(error));
+		if (localStorage.getItem('accessToken') !== null) {
+			dispatch(login(localStorage.getItem('accessToken')));
+		}
+		dispatch(fetchAllCourses());
 	}, []);
 
 	if (coursesState.courses.length === 0) {
