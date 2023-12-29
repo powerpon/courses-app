@@ -1,13 +1,5 @@
-import * as React from 'react';
 import './CourseForm.scss';
-import { Button, Input, TextArea } from '../../common';
-import {
-	CANCEL_BUTTON_TEXT,
-	CREATE_AUTHOR_BUTTON_TEXT,
-	CREATE_COURSE_BUTTON_TEXT,
-} from '../../constants';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Author } from '../Courses/components/CourseCard/CourseCard';
 import AuthorItem from './components/AuthorItem/AuthorItem';
 import { getCourseDuration, sanitizeFormInput } from 'src/helpers';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +16,13 @@ import { AppDispatch } from 'src/store';
 import { fetchAllAuthors, saveAuthor } from 'src/store/authors/thunk';
 import { getCoursesSelector } from 'src/store/courses/selectors';
 import { CoursesState } from 'src/store/courses/slice';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import { Button, Input, TextArea } from 'src/common';
+import {
+	CANCEL_BUTTON_TEXT,
+	CREATE_AUTHOR_BUTTON_TEXT,
+	CREATE_COURSE_BUTTON_TEXT,
+} from 'src/constants';
 
 export default function CourseForm() {
 	const navigation = useNavigate();
@@ -32,61 +31,37 @@ export default function CourseForm() {
 	const authorsState: AuthorsState = useSelector(getAuthorsSelector);
 	const user: UserState = useSelector(getUserSelector);
 	const coursesState: CoursesState = useSelector(getCoursesSelector);
-	const currentCourseToEdit = React.useRef(
+	const currentCourseToEdit = useRef(
 		coursesState.courses.find((course) => course.id === courseId)
 	);
-	const [courseAuthorList, setCourseAuthorList]: [
-		Author[],
-		React.Dispatch<React.SetStateAction<Author[]>>,
-	] = React.useState(
+	const [courseAuthorList, setCourseAuthorList] = useState(
 		currentCourseToEdit.current
 			? authorsState.authors.filter((author) =>
 					currentCourseToEdit.current.authors.includes(author.id)
 				)
 			: []
 	);
-	const [formInputAuthorName, setFormInputAuthorName]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputCourseTitle, setFormInputCourseTitle]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState(
+	const [formInputAuthorName, setFormInputAuthorName] = useState('');
+	const [formInputCourseTitle, setFormInputCourseTitle] = useState(
 		currentCourseToEdit.current ? currentCourseToEdit.current.title : ''
 	);
-	const [formInputCourseDescription, setFormInputCourseDescription]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState(
+	const [formInputCourseDescription, setFormInputCourseDescription] = useState(
 		currentCourseToEdit.current ? currentCourseToEdit.current.description : ''
 	);
-	const [formInputCourseDuration, setFormInputCourseDuration]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState(
+	const [formInputCourseDuration, setFormInputCourseDuration] = useState(
 		currentCourseToEdit.current
 			? currentCourseToEdit.current.duration.toString()
 			: ''
 	);
-	const [isMissingAuthorName, setIsMissingAuthorName]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputCourseTitle, setIsMissingInputCourseTitle]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputCourseDescription, setIsMissingInputCourseDescription]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputCourseDuration, setIsMissingInputCourseDuration]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
+	const [isMissingAuthorName, setIsMissingAuthorName] = useState(false);
+	const [isMissingInputCourseTitle, setIsMissingInputCourseTitle] =
+		useState(false);
+	const [isMissingInputCourseDescription, setIsMissingInputCourseDescription] =
+		useState(false);
+	const [isMissingInputCourseDuration, setIsMissingInputCourseDuration] =
+		useState(false);
 
-	const handleCourseFormSubmit = (event: React.FormEvent) => {
+	const handleCourseFormSubmit = (event: FormEvent) => {
 		event.preventDefault();
 		const isMissingCourseTitleAfterSanitization = sanitizeFormInput(
 			formInputCourseTitle,
@@ -135,7 +110,7 @@ export default function CourseForm() {
 		}
 	};
 
-	const handleCreateAuthorFormSubmit = (event: React.FormEvent) => {
+	const handleCreateAuthorFormSubmit = (event: FormEvent) => {
 		event.preventDefault();
 		const isMissingAuthorNameAfterSanitization = sanitizeFormInput(
 			formInputAuthorName,
@@ -152,7 +127,7 @@ export default function CourseForm() {
 		}
 	};
 
-	React.useEffect(() => {
+	useEffect(() => {
 		dispatch(fetchAllAuthors());
 		dispatch(fetchAllCourses());
 	}, []);

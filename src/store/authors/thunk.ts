@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import endpoints from '../../services';
+import endpoints from 'src/services';
 
 interface SaveAuthorParams {
 	authorName: string;

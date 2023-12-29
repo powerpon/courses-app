@@ -1,9 +1,9 @@
-import * as React from 'react';
 import './Button.scss';
+import React, { MouseEventHandler } from 'react';
 
 interface Props {
 	buttonText?: string;
-	onClick?: React.MouseEventHandler<HTMLButtonElement>;
+	onClick?: MouseEventHandler<HTMLButtonElement>;
 	className?: string;
 	form?: string;
 	children?: JSX.Element;

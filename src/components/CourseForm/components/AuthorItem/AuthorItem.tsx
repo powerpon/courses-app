@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import './AuthorItem.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';

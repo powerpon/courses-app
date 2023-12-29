@@ -1,10 +1,10 @@
-import * as React from 'react';
 import './AuthorsMetaData.scss';
 import { Author } from 'src/components/Courses/components/CourseCard/CourseCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAuthorsSelector } from 'src/store/authors/selectors';
 import { AppDispatch } from 'src/store';
 import { fetchAllAuthors } from 'src/store/authors/thunk';
+import React, { useEffect } from 'react';
 
 interface Props {
 	authorIds: string[];
@@ -16,7 +16,7 @@ export default function AuthorsMetaData(props: Props) {
 	);
 	const dispatch = useDispatch<AppDispatch>();
 
-	React.useEffect(() => {
+	useEffect(() => {
 		dispatch(fetchAllAuthors());
 	}, []);
 

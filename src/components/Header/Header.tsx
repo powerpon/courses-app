@@ -1,13 +1,13 @@
-import * as React from 'react';
-import Logo from './components/Logo/Logo';
-import Button from '../../common/Button/Button';
 import './Header.scss';
-import { LOGIN_BUTTON_TEXT, LOGOUT_BUTTON_TEXT } from '../../constants';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserSelector } from 'src/store/user/selectors';
 import { login, logout } from 'src/store/user/thunk';
 import { AppDispatch } from 'src/store';
+import React, { useEffect } from 'react';
+import { Button } from 'src/common';
+import { LOGIN_BUTTON_TEXT, LOGOUT_BUTTON_TEXT } from 'src/constants';
+import { Logo } from 'src/components';
 
 interface User {
 	email: string;
@@ -25,9 +25,10 @@ export default function Header() {
 		dispatch(logout(user.token));
 	};
 
-	React.useEffect(() => {
-		if (localStorage.getItem('accessToken') !== null) {
-			dispatch(login(localStorage.getItem('accessToken')));
+	useEffect(() => {
+		const userToken = localStorage.getItem('accessToken');
+		if (userToken !== null) {
+			dispatch(login(userToken));
 		}
 	}, []);
 

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import logo from '../../../../assets/logo.png';
+import React from 'react';
+import logo from 'src/assets/logo.png';
 import './Logo.scss';
 
 interface Props {

@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { INPUT_BAR_PLACEHOLDER_TEXT } from '../../constants';
+import { INPUT_BAR_PLACEHOLDER_TEXT } from 'src/constants';
 import './Input.scss';
+import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 interface Props {
 	className?: string;
 	value: string;
-	setValue: React.Dispatch<React.SetStateAction<string>>;
+	setValue: Dispatch<SetStateAction<string>>;
 	id?: string;
 	type?: 'password' | 'text' | 'number';
 	form?: string;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function Input(props: Props) {
-	const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
 		props.setValue(event.target.value);
 	};
 

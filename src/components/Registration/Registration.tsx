@@ -1,39 +1,21 @@
-import * as React from 'react';
 import './Registration.scss';
-import { Button, Input } from '../../common';
-import { REGISTER_BUTTON_TEXT } from '../../constants';
+import { Button, Input } from 'src/common';
+import { REGISTER_BUTTON_TEXT } from 'src/constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { sanitizeFormInput } from 'src/helpers';
-import endpoints from '../../services';
+import endpoints from 'src/services';
+import React, { FormEvent, useState } from 'react';
 
 export default function Registration() {
 	const navigation = useNavigate();
-	const [formInputName, setFormInputName]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputEmail, setFormInputEmail]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [formInputPassword, setFormInputPassword]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
-	const [isMissingInputName, setIsMissingInputName]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputEmail, setIsMissingInputEmail]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
-	const [isMissingInputPassword, setIsMissingInputPassword]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
+	const [formInputName, setFormInputName] = useState('');
+	const [formInputEmail, setFormInputEmail] = useState('');
+	const [formInputPassword, setFormInputPassword] = useState('');
+	const [isMissingInputName, setIsMissingInputName] = useState(false);
+	const [isMissingInputEmail, setIsMissingInputEmail] = useState(false);
+	const [isMissingInputPassword, setIsMissingInputPassword] = useState(false);
 
-	const handleFormSubmit = (event: React.FormEvent) => {
+	const handleFormSubmit = (event: FormEvent) => {
 		event.preventDefault();
 		const isMissingNameAfterSanitization = sanitizeFormInput(
 			formInputName,

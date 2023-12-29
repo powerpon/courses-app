@@ -35,7 +35,7 @@ const userSlice = createSlice({
 				) => {
 					state.email = action.payload.email;
 					state.name = action.payload.name;
-					state.token = localStorage.getItem('accessToken'); // action.payload.token
+					state.token = localStorage.getItem('accessToken');
 					state.role = action.payload.role;
 					state.token !== null ? (state.isAuth = true) : (state.isAuth = false);
 				}

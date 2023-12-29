@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import './EmptyCourseList.scss';
-import { Button } from '../../common';
-import { ADD_NEW_COURSE_BUTTON_TEXT } from '../../constants';
 import { Link } from 'react-router-dom';
 import { UserState } from 'src/store/user/slice';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from 'src/store/user/selectors';
+import { Button } from 'src/common';
+import { ADD_NEW_COURSE_BUTTON_TEXT } from 'src/constants';
 
 export default function EmptyCourseList() {
 	const user: UserState = useSelector(getUserSelector);

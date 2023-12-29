@@ -1,6 +1,4 @@
-import * as React from 'react';
 import './Courses.scss';
-import { CourseCard, EmptyCourseList, SearchBar } from '../../components';
 import { ADD_NEW_COURSE_BUTTON_TEXT } from 'src/constants';
 import { Button } from 'src/common';
 import { Link } from 'react-router-dom';
@@ -12,20 +10,20 @@ import { getCoursesSelector } from 'src/store/courses/selectors';
 import { AppDispatch } from 'src/store';
 import { login } from 'src/store/user/thunk';
 import { fetchAllCourses } from 'src/store/courses/thunk';
+import React, { useEffect, useState } from 'react';
+import { EmptyCourseList, CourseCard, SearchBar } from 'src/components';
 
 export default function Courses() {
 	const coursesState: CoursesState = useSelector(getCoursesSelector);
 	const user: UserState = useSelector(getUserSelector);
 	const dispatch = useDispatch<AppDispatch>();
 
-	const [query, setQuery]: [
-		string,
-		React.Dispatch<React.SetStateAction<string>>,
-	] = React.useState('');
+	const [query, setQuery] = useState('');
 
-	React.useEffect(() => {
-		if (localStorage.getItem('accessToken') !== null) {
-			dispatch(login(localStorage.getItem('accessToken')));
+	useEffect(() => {
+		const userToken = localStorage.getItem('accessToken');
+		if (userToken !== null) {
+			dispatch(login(userToken));
 		}
 		dispatch(fetchAllCourses());
 	}, []);
