@@ -24,10 +24,8 @@ const userSlice = createSlice({
 		) => {
 			state.email = action.payload.email;
 			state.name = action.payload.name;
-			state.token = action.payload.token;
-			action.payload.token === ''
-				? (state.isAuth = false)
-				: (state.isAuth = true);
+			state.token = localStorage.getItem('accessToken');
+			state.token === null ? (state.isAuth = false) : (state.isAuth = true);
 		},
 		logout: (state: UserState) => {
 			state = initialUserState;

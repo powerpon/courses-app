@@ -66,27 +66,27 @@ export default function CreateCourse() {
 
 	const handleCreateCourseFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingInputCourseTitleAfterSanitization = sanitizeFormInput(
 			formInputCourseTitle,
 			setFormInputCourseTitle,
 			setIsMissingInputCourseTitle,
 			3
 		);
-		sanitizeFormInput(
+		const isMissingInputCourseDescriptionAfterSanitization = sanitizeFormInput(
 			formInputCourseDescription,
 			setFormInputCourseDescription,
 			setIsMissingInputCourseDescription,
 			3
 		);
-		sanitizeFormInput(
+		const isMissingInputCourseDurationAfterSanitization = sanitizeFormInput(
 			formInputCourseDuration,
 			setFormInputCourseDuration,
 			setIsMissingInputCourseDuration
 		);
 		if (
-			!isMissingInputCourseTitle &&
-			!isMissingInputCourseDescription &&
-			!isMissingInputCourseDuration
+			!isMissingInputCourseTitleAfterSanitization &&
+			!isMissingInputCourseDescriptionAfterSanitization &&
+			!isMissingInputCourseDurationAfterSanitization
 		) {
 			endpoints
 				.saveCourse(
@@ -106,13 +106,13 @@ export default function CreateCourse() {
 
 	const handleCreateAuthorFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingInputAuthorNameAfterSanitization = sanitizeFormInput(
 			formInputAuthorName,
 			setFormInputAuthorName,
 			setIsMissingAuthorName,
 			3
 		);
-		if (!isMissingAuthorName) {
+		if (!isMissingInputAuthorNameAfterSanitization) {
 			endpoints
 				.saveAuthor(formInputAuthorName, user.token)
 				.then((response) => {

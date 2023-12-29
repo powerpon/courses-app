@@ -10,7 +10,8 @@ export const sanitizeFormInput = (
 	setInput(clearInput);
 	if (clearInput.length < mininumCharacters) {
 		setIsInputInvalid(true);
-		return;
+		return true;
 	}
 	setIsInputInvalid(false);
+	return false;
 };

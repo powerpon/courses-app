@@ -30,17 +30,20 @@ export default function Login() {
 
 	const handleFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		sanitizeFormInput(
+		const isMissingInputEmailAfterSanitization = sanitizeFormInput(
 			formInputEmail,
 			setFormInputEmail,
 			setIsMissingInputEmail
 		);
-		sanitizeFormInput(
+		const isMissingInputPasswordAfterSanitization = sanitizeFormInput(
 			formInputPassword,
 			setFormInputPassword,
 			setIsMissingInputPassword
 		);
-		if (!isMissingInputEmail && !isMissingInputPassword) {
+		if (
+			!isMissingInputEmailAfterSanitization &&
+			!isMissingInputPasswordAfterSanitization
+		) {
 			endpoints
 				.loginUser(formInputEmail, formInputPassword)
 				.then((response) => {
