@@ -40,6 +40,7 @@ export default function Courses() {
 					className='loaded-search-bar'
 				/>
 				<Link
+					data-testid='add-new-course-link'
 					style={{ display: user.isAuth ? 'block' : 'none' }}
 					to={'/courses/add'}
 				>
