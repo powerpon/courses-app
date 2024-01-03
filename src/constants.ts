@@ -62,12 +62,13 @@ export const CREATE_COURSE_BUTTON_TEXT = 'CREATE COURSE';
 
 export const SERVER_BASE_URL = 'http://localhost:4000/';
 export const SERVER_FETCH_ALL_COURSES_URL = SERVER_BASE_URL + 'courses/all';
-export const SERVER_FETCH_COURSES_BY_IDS_URL = SERVER_BASE_URL + 'courses/';
+export const SERVER_FETCH_COURSE_BY_ID_URL = SERVER_BASE_URL + 'courses/';
 export const SERVER_FETCH_ALL_AUTHORS_URL = SERVER_BASE_URL + 'authors/all';
-export const SERVER_FETCH_AUTHORS_BY_IDS_URL = SERVER_BASE_URL + 'authors/';
+export const SERVER_FETCH_AUTHOR_BY_ID_URL = SERVER_BASE_URL + 'authors/';
 export const SERVER_POST_REGISTER_URL = SERVER_BASE_URL + 'register';
 export const SERVER_POST_LOGIN_URL = SERVER_BASE_URL + 'login';
 export const SERVER_FETCH_USER_URL = SERVER_BASE_URL + 'users/me';
 export const SERVER_POST_LOGOUT_URL = SERVER_BASE_URL + 'logout';
 export const SERVER_CREATE_AUTHOR_URL = SERVER_BASE_URL + 'authors/add';
 export const SERVER_CREATE_COURSE_URL = SERVER_BASE_URL + 'courses/add';
+export const SERVER_DELETE_COURSE_URL = SERVER_BASE_URL + 'courses/';

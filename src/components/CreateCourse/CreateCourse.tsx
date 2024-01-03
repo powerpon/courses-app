@@ -5,22 +5,28 @@ import {
 	CANCEL_BUTTON_TEXT,
 	CREATE_AUTHOR_BUTTON_TEXT,
 	CREATE_COURSE_BUTTON_TEXT,
-	SERVER_CREATE_AUTHOR_URL,
-	SERVER_CREATE_COURSE_URL,
-	SERVER_FETCH_ALL_AUTHORS_URL,
 } from '../../constants';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Author } from '../Courses/components/CourseCard/CourseCard';
 import AuthorItem from './components/AuthorItem/AuthorItem';
 import { getCourseDuration, sanitizeFormInput } from 'src/helpers';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+	AuthorsState,
+	fetchAllAuthors,
+	saveAuthor,
+} from 'src/store/authors/slice';
+import { getAuthorsSelector } from 'src/store/authors/selectors';
+import endpoints from '../../services';
+import { UserState } from 'src/store/user/slice';
+import { getUserSelector } from 'src/store/user/selectors';
+import { saveCourse } from 'src/store/courses/slice';
 
 export default function CreateCourse() {
 	const navigation = useNavigate();
-	const [authors, setAuthors]: [
-		Author[],
-		React.Dispatch<React.SetStateAction<Author[]>>,
-	] = React.useState([]);
+	const dispatch = useDispatch();
+	const authorsState: AuthorsState = useSelector(getAuthorsSelector);
+	const user: UserState = useSelector(getUserSelector);
 	const [courseAuthorList, setCourseAuthorList]: [
 		Author[],
 		React.Dispatch<React.SetStateAction<Author[]>>,
@@ -58,85 +64,71 @@ export default function CreateCourse() {
 		React.Dispatch<React.SetStateAction<boolean>>,
 	] = React.useState(false);
 
-	const handleCreateCourseFormSubmit = async (event: React.FormEvent) => {
+	const handleCreateCourseFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		try {
-			sanitizeFormInput(
-				formInputCourseTitle,
-				setFormInputCourseTitle,
-				setIsMissingInputCourseTitle,
-				3
-			);
-			sanitizeFormInput(
-				formInputCourseDescription,
-				setFormInputCourseDescription,
-				setIsMissingInputCourseDescription,
-				3
-			);
-			sanitizeFormInput(
-				formInputCourseDuration,
-				setFormInputCourseDuration,
-				setIsMissingInputCourseDuration
-			);
-			if (
-				!isMissingInputCourseTitle &&
-				!isMissingInputCourseDescription &&
-				!isMissingInputCourseDuration
-			) {
-				await axios.post(
-					SERVER_CREATE_COURSE_URL,
-					{
-						title: formInputCourseTitle,
-						description: formInputCourseDescription,
-						duration: Number.parseInt(formInputCourseDuration),
-						authors: courseAuthorList.map((author) => author.id),
-					},
-					{
-						headers: {
-							Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-						},
-					}
-				);
-				navigation('/courses');
-			}
-		} catch (error) {
-			console.log(error);
+		const isMissingInputCourseTitleAfterSanitization = sanitizeFormInput(
+			formInputCourseTitle,
+			setFormInputCourseTitle,
+			setIsMissingInputCourseTitle,
+			3
+		);
+		const isMissingInputCourseDescriptionAfterSanitization = sanitizeFormInput(
+			formInputCourseDescription,
+			setFormInputCourseDescription,
+			setIsMissingInputCourseDescription,
+			3
+		);
+		const isMissingInputCourseDurationAfterSanitization = sanitizeFormInput(
+			formInputCourseDuration,
+			setFormInputCourseDuration,
+			setIsMissingInputCourseDuration
+		);
+		if (
+			!isMissingInputCourseTitleAfterSanitization &&
+			!isMissingInputCourseDescriptionAfterSanitization &&
+			!isMissingInputCourseDurationAfterSanitization
+		) {
+			endpoints
+				.saveCourse(
+					formInputCourseTitle,
+					formInputCourseDescription,
+					Number.parseInt(formInputCourseDuration),
+					courseAuthorList.map((author) => author.id),
+					user.token
+				)
+				.then((response) => {
+					dispatch(saveCourse(response.data.result));
+					navigation('/courses');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 
-	const handleCreateAuthorFormSubmit = async (event: React.FormEvent) => {
+	const handleCreateAuthorFormSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		try {
-			sanitizeFormInput(
-				formInputAuthorName,
-				setFormInputAuthorName,
-				setIsMissingAuthorName,
-				3
-			);
-			await axios.post(
-				SERVER_CREATE_AUTHOR_URL,
-				{
-					name: formInputAuthorName,
-				},
-				{
-					headers: {
-						Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-					},
-				}
-			);
-			setFormInputAuthorName('');
-		} catch (error) {
-			console.log(error);
+		const isMissingInputAuthorNameAfterSanitization = sanitizeFormInput(
+			formInputAuthorName,
+			setFormInputAuthorName,
+			setIsMissingAuthorName,
+			3
+		);
+		if (!isMissingInputAuthorNameAfterSanitization) {
+			endpoints
+				.saveAuthor(formInputAuthorName, user.token)
+				.then((response) => {
+					dispatch(saveAuthor(response.data.result));
+					setFormInputAuthorName('');
+				})
+				.catch((error) => console.log(error));
 		}
 	};
 
 	React.useEffect(() => {
-		const getAllAuthors = async () => {
-			const response = await axios.get(SERVER_FETCH_ALL_AUTHORS_URL);
-			setAuthors(response.data.result);
-		};
-		getAllAuthors();
-	}, [formInputAuthorName]);
+		endpoints
+			.getAllAuthors()
+			.then((response) => dispatch(fetchAllAuthors(response.data.result)))
+			.catch((error) => console.log(error));
+	}, []);
 
 	return (
 		<main className='course-create'>
@@ -281,7 +273,7 @@ export default function CreateCourse() {
 					<li className='create-course-all-authors'>
 						<p className='create-course-section-title'>Authors List</p>
 						<ul className='all-authors-list'>
-							{authors.map((author) =>
+							{authorsState.authors.map((author) =>
 								courseAuthorList.length === 0 ? (
 									<li key={author.id} className='all-authors-list-item'>
 										<AuthorItem

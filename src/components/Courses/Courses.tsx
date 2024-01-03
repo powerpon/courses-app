@@ -1,36 +1,34 @@
 import * as React from 'react';
 import './Courses.scss';
 import { CourseCard, EmptyCourseList, SearchBar } from '../../components';
-import { Course } from './components/CourseCard/CourseCard';
-import useFetch from 'src/custom-hooks/useFetch';
-import {
-	ADD_NEW_COURSE_BUTTON_TEXT,
-	SERVER_FETCH_ALL_COURSES_URL,
-} from 'src/constants';
+import { ADD_NEW_COURSE_BUTTON_TEXT } from 'src/constants';
 import { Button } from 'src/common';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserSelector } from 'src/store/user/selectors';
+import endpoints from '../../services';
+import { CoursesState, fetchAllCourses } from 'src/store/courses/slice';
+import { UserState } from 'src/store/user/slice';
+import { getCoursesSelector } from 'src/store/courses/selectors';
 
 export default function Courses() {
-	const courses: Course[] = useFetch(SERVER_FETCH_ALL_COURSES_URL);
+	const coursesState: CoursesState = useSelector(getCoursesSelector);
+	const user: UserState = useSelector(getUserSelector);
+	const dispatch = useDispatch();
 
 	const [query, setQuery]: [
 		string,
 		React.Dispatch<React.SetStateAction<string>>,
 	] = React.useState('');
-	const [isUserLoggedIn, setIsUserLoggedIn]: [
-		boolean,
-		React.Dispatch<React.SetStateAction<boolean>>,
-	] = React.useState(false);
 
 	React.useEffect(() => {
-		if (localStorage.getItem('accessToken') !== null) {
-			setIsUserLoggedIn(true);
-			return;
-		}
-		setIsUserLoggedIn(false);
+		endpoints
+			.getAllCourses()
+			.then((response) => dispatch(fetchAllCourses(response.data.result)))
+			.catch((error) => console.log(error));
 	}, []);
 
-	if (courses.length === 0) {
+	if (coursesState.courses.length === 0) {
 		return <EmptyCourseList />;
 	}
 	return (
@@ -42,14 +40,14 @@ export default function Courses() {
 					className='loaded-search-bar'
 				/>
 				<Link
-					style={{ display: isUserLoggedIn ? 'block' : 'none' }}
+					style={{ display: user.isAuth ? 'block' : 'none' }}
 					to={'/courses/add'}
 				>
 					<Button buttonText={ADD_NEW_COURSE_BUTTON_TEXT} />
 				</Link>
 			</div>
 			{query === ''
-				? courses.map((course) => (
+				? coursesState.courses.map((course) => (
 						<CourseCard
 							className='loaded-course-card'
 							key={course.id}
@@ -57,7 +55,7 @@ export default function Courses() {
 							authorIds={course.authors}
 						/>
 					))
-				: courses
+				: coursesState.courses
 						.filter((course) => {
 							return (
 								course.title.toLowerCase().includes(query) ||
